@@ -1,0 +1,52 @@
+// Apify SDK and Crawlee for scraping
+import { Actor } from 'apify';
+import { CheerioCrawler, Dataset } from 'crawlee';
+
+await Actor.init();
+
+// Load input schema fields
+const { startUrls = [], keywords = [], maxRequestsPerCrawl = 100 } = (await Actor.getInput()) ?? {};
+
+const proxyConfiguration = await Actor.createProxyConfiguration();
+
+const crawler = new CheerioCrawler({
+    proxyConfiguration,
+    maxRequestsPerCrawl,
+    async requestHandler({ enqueueLinks, request, $, log }) {
+        log.info(`Scraping: ${request.loadedUrl}`);
+
+        // Extract company name
+        const companyName = $('meta[property="og:site_name"]').attr('content') || $('title').text().split('|')[0].trim();
+
+        // Extract reviews
+        const reviews = $('.review'); // Update based on each site’s HTML structure
+        const scrapedReviews = reviews.map((index, element) => {
+            const reviewTitle = $(element).find('.review-title').text().trim();
+            const reviewDate = $(element).find('.review-date').text().trim(); // Adjust based on date selector
+            const reviewContent = $(element).find('.content').text().trim(); // Update for full review
+            const url = request.loadedUrl + $(element).find('.review-title a').attr('href');
+
+            // Match user-defined keywords in review content
+            const matchingKeywords = keywords.filter(keyword => reviewContent.toLowerCase().includes(keyword.toLowerCase()));
+
+            return { companyName, reviewTitle, reviewContent, matchingKeywords, reviewDate, url };
+        }).get();
+
+        // Push valid reviews to dataset
+        for (const review of scrapedReviews) {
+            if (review.matchingKeywords.length > 0) {
+                await Dataset.pushData(review);
+            }
+        }
+
+        // Enqueue more links if pagination exists
+        await enqueueLinks({
+            selector: '.pagination a', // Adjust for pagination links
+        });
+    }
+});
+
+// Start scraping
+await crawler.run(startUrls);
+
+await Actor.exit();

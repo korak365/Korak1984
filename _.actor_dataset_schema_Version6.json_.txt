@@ -1,0 +1,66 @@
+{
+    "actorSpecification": 1,
+    "fields": {
+        "companyName": {
+            "type": "string",
+            "title": "Company Name"
+        },
+        "reviewTitle": {
+            "type": "string",
+            "title": "Review Title"
+        },
+        "reviewContent": {
+            "type": "string",
+            "title": "Full Review"
+        },
+        "matchingKeywords": {
+            "type": "array",
+            "items": {
+                "type": "string"
+            },
+            "title": "Matching Keywords"
+        },
+        "reviewDate": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Review Date"
+        },
+        "url": {
+            "type": "string",
+            "title": "Review URL"
+        }
+    },
+    "views": {
+        "overview": {
+            "title": "Overview",
+            "transformation": {
+                "fields": ["companyName", "reviewTitle", "reviewDate", "matchingKeywords", "url"]
+            },
+            "display": {
+                "component": "table",
+                "properties": {
+                    "companyName": {
+                        "label": "Company Name",
+                        "format": "text"
+                    },
+                    "reviewTitle": {
+                        "label": "Review Title",
+                        "format": "text"
+                    },
+                    "reviewDate": {
+                        "label": "Review Date",
+                        "format": "date"
+                    },
+                    "matchingKeywords": {
+                        "label": "Keywords in Review",
+                        "format": "array"
+                    },
+                    "url": {
+                        "label": "Review URL",
+                        "format": "link"
+                    }
+                }
+            }
+        }
+    }
+}

@@ -1,0 +1,39 @@
+{
+    "title": "Input schema for Company Culture Monitor Scraper",
+    "type": "object",
+    "schemaVersion": 1,
+    "properties": {
+        "startUrls": {
+            "title": "Start URLs",
+            "type": "array",
+            "description": "List of links to the company profile pages or reviews sections.",
+            "editor": "requestListSources",
+            "prefill": [
+                {
+                    "url": "https://www.glassdoor.com/Overview/Company-Reviews.htm"
+                },
+                {
+                    "url": "https://www.indeed.com/companies"
+                }
+            ]
+        },
+        "keywords": {
+            "title": "Keywords to Search",
+            "type": "array",
+            "description": "Keywords to flag in the reviews (e.g., 'management turnover', 'leadership change').",
+            "editor": "stringArray",
+            "default": [
+                "management turnover",
+                "leadership change",
+                "senior leadership instability",
+                "executive departures"
+            ]
+        },
+        "maxRequestsPerCrawl": {
+            "title": "Max Requests per Crawl",
+            "type": "integer",
+            "description": "Sets a limit on the total number of pages to scrape.",
+            "default": 100
+        }
+    }
+}
